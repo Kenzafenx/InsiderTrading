@@ -63,11 +63,23 @@ across all four holdings therefore takes on the order of 20–60 minutes
 depending on how much history each company has. Subsequent runs are fast:
 only brand-new filings trigger new requests.
 
+## Live site & daily updates
+
+The dashboard is published via GitHub Pages: **https://kenzafenx.github.io/InsiderTrading/**
+
+`.github/workflows/daily-scrape.yml` runs every day at 06:00 UTC: it
+re-syncs holdings from warm-buffet, scrapes FSMA for anything new, and
+commits `data/` if there were changes. GitHub Pages then redeploys
+automatically — no manual steps needed. Trigger it manually from the
+Actions tab ("Run workflow") any time you don't want to wait for the
+schedule.
+
 ## Status / next steps
 
 - [x] Prototype working for personal use, scoped to our own holdings.
-- [ ] Decide whether to automate this with a daily scheduled run
-      (e.g. GitHub Actions).
+- [x] Published on GitHub Pages, repo is public (the underlying data is
+      public regulatory disclosure data anyway).
+- [x] Daily scheduled run via GitHub Actions.
 - [ ] If this proves useful, propose integrating it into the warm-buffet
       dashboard itself (as a PR, with the repo owner's buy-in) — not done
       yet, by design.

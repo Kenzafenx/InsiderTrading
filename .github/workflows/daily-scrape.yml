@@ -1,0 +1,40 @@
+name: Daily insider-transaction update
+
+on:
+  schedule:
+    # 06:00 UTC every day (before European markets open)
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Sync holdings from warm-buffet
+        run: python3 scripts/sync_holdings.py
+
+      - name: Scrape FSMA for new transactions
+        run: python3 scripts/scrape_insiders.py
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No new transactions today."
+          else
+            git commit -m "Daily update: $(date -u +%Y-%m-%d)"
+            git push
+          fi
