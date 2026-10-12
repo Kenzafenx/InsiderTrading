@@ -1,0 +1,4 @@
+{
+  "_comment": "Manual ticker -> FSMA issuer name overrides, only needed when the automatic name-matching in scrape_insiders.py can't confidently resolve a holding (ambiguous or very different naming). Add an entry here if the script logs an 'unresolved holding' warning.",
+  "overrides": {}
+}

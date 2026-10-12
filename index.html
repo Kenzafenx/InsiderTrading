@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insider Watch — 't Warm Buffet</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #262b35;
+    --text: #e8eaed;
+    --muted: #8b93a1;
+    --buy: #3ddc84;
+    --sell: #ff6b6b;
+    --accent: #6ea8ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    padding: 2rem 1.5rem 1rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  header h1 {
+    margin: 0 0 0.25rem;
+    font-size: 1.6rem;
+  }
+  header p {
+    color: var(--muted);
+    margin: 0.2rem 0;
+    font-size: 0.92rem;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+  }
+  .card .label { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .card .value { font-size: 1.4rem; font-weight: 600; margin-top: 0.2rem; }
+  .card.buy .value { color: var(--buy); }
+  .card.sell .value { color: var(--sell); }
+
+  .filters {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 1rem;
+  }
+  .filters button {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .filters button.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  thead th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .ticker { color: var(--accent); font-weight: 600; }
+  .type-tag {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .type-tag.BUY { background: rgba(61,220,132,0.15); color: var(--buy); }
+  .type-tag.SELL { background: rgba(255,107,107,0.15); color: var(--sell); }
+  .type-tag.OTHER { background: rgba(139,147,161,0.15); color: var(--muted); }
+  .excluded { opacity: 0.45; }
+  .amount { text-align: right; font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  footer {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 3rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  footer a { color: var(--muted); }
+  #status { color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Insider Watch — 't Warm Buffet</h1>
+  <p>Insider-transacties gemeld bij de FSMA voor de Belgische holdings in onze portefeuille.</p>
+  <p id="status">Data laden…</p>
+</header>
+<main>
+  <div class="summary" id="summary"></div>
+
+  <div class="filters" id="filters">
+    <button data-filter="all" class="active">Alles</button>
+    <button data-filter="BUY">Aankopen</button>
+    <button data-filter="SELL">Verkopen</button>
+    <button data-filter="relevant">Enkel relevante (&ge; €5.000, geen bonus/optie)</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Publicatie</th>
+        <th>Bedrijf</th>
+        <th>Persoon</th>
+        <th>Type</th>
+        <th class="amount">Bedrag</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+<footer>
+  Bron: <a href="https://www.fsma.be/en/transaction-search" target="_blank" rel="noopener">FSMA — Managers' Transactions</a>.
+  Gevolgde bedrijven komen automatisch uit de actieve Belgische (Euronext Brussels) posities van
+  <a href="https://bkb1a.github.io/warm-buffet/" target="_blank" rel="noopener">'t Warm Buffet</a>.
+  Enkel informatief, geen beleggingsadvies.
+  <br>Methodologie geïnspireerd op <a href="https://insiderwatch.be/about" target="_blank" rel="noopener">insiderwatch.be</a>:
+  "relevante" transacties zijn vrijwillige aan-/verkopen op de open markt &ge; €5.000, exclusief toekenningen, optie-uitoefeningen, schenkingen en pandrechten.
+</footer>
+
+<script>
+let allRows = [];
+let currentFilter = "all";
+
+function fmtAmount(tx) {
+  if (tx.amount == null) return "—";
+  return new Intl.NumberFormat("nl-BE", { style: "currency", currency: tx.currency || "EUR", maximumFractionDigits: 0 }).format(tx.amount);
+}
+
+function render() {
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+
+  let visible = allRows;
+  if (currentFilter === "BUY" || currentFilter === "SELL") {
+    visible = allRows.filter(t => t.type === currentFilter);
+  } else if (currentFilter === "relevant") {
+    visible = allRows.filter(t => t.included);
+  }
+
+  for (const tx of visible) {
+    const tr = document.createElement("tr");
+    if (!tx.included) tr.classList.add("excluded");
+    tr.innerHTML = `
+      <td>${tx.publication_date || "—"}</td>
+      <td><span class="ticker">${tx.ticker}</span><br><span style="color:var(--muted);font-size:0.8rem">${tx.issuer_name}</span></td>
+      <td>${tx.person}<br><span style="color:var(--muted);font-size:0.8rem">${tx.declarer_type || ""}</span></td>
+      <td><span class="type-tag ${tx.type}">${tx.type}</span></td>
+      <td class="amount">${fmtAmount(tx)}</td>
+      <td><a href="${tx.detail_url}" target="_blank" rel="noopener">FSMA ↗</a></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  if (visible.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted); text-align:center; padding:2rem;">Geen transacties voor dit filter.</td></tr>`;
+  }
+}
+
+function renderSummary(holdings) {
+  const summary = document.getElementById("summary");
+  const relevant = allRows.filter(t => t.included);
+  const buys = relevant.filter(t => t.type === "BUY");
+  const sells = relevant.filter(t => t.type === "SELL");
+  const buyTotal = buys.reduce((s, t) => s + (t.amount || 0), 0);
+  const sellTotal = sells.reduce((s, t) => s + (t.amount || 0), 0);
+
+  summary.innerHTML = `
+    <div class="card"><div class="label">Gevolgde bedrijven</div><div class="value">${holdings.length}</div></div>
+    <div class="card buy"><div class="label">Aankopen</div><div class="value">${buys.length}</div></div>
+    <div class="card sell"><div class="label">Verkopen</div><div class="value">${sells.length}</div></div>
+    <div class="card buy"><div class="label">Totaal gekocht</div><div class="value">${new Intl.NumberFormat("nl-BE",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(buyTotal)}</div></div>
+    <div class="card sell"><div class="label">Totaal verkocht</div><div class="value">${new Intl.NumberFormat("nl-BE",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(sellTotal)}</div></div>
+  `;
+}
+
+async function main() {
+  const status = document.getElementById("status");
+  try {
+    const [txRes, holdingsRes] = await Promise.all([
+      fetch("data/transactions.json"),
+      fetch("data/holdings.json"),
+    ]);
+    allRows = await txRes.json();
+    const holdings = await holdingsRes.json();
+
+    status.textContent = `${allRows.length} transacties geladen voor ${holdings.map(h => h.ticker).join(", ")}.`;
+    renderSummary(holdings);
+    render();
+  } catch (e) {
+    status.textContent = "Kon data/transactions.json niet laden. Draai eerst de scrapescripts.";
+    console.error(e);
+  }
+}
+
+document.getElementById("filters").addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  currentFilter = btn.dataset.filter;
+  document.querySelectorAll("#filters button").forEach(b => b.classList.toggle("active", b === btn));
+  render();
+});
+
+main();
+</script>
+</body>
+</html>
