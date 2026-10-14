@@ -231,6 +231,27 @@
     "scraped_at": "2026-10-12T07:28:49.595160+00:00"
   },
   {
+    "id": "montea-68",
+    "ticker": "MONT.BR",
+    "issuer_name": "MONTEA",
+    "person": "Montanus Cedric",
+    "declarer_type": "Person closely associated to a senior executive",
+    "publication_date": "2026-07-08",
+    "transaction_date": "2026-07-03",
+    "type_raw": "Sale / Disposal",
+    "type": "SELL",
+    "included": true,
+    "specifications": null,
+    "instrument_type": "Share",
+    "isin": "BE0003853703",
+    "currency": "EUR",
+    "quantity": 1500.0,
+    "price": 67.7,
+    "amount": 101550.0,
+    "detail_url": "https://www.fsma.be/en/manager-transaction/montea-68",
+    "scraped_at": "2026-10-14T11:29:00.725424+00:00"
+  },
+  {
     "id": "sofina-37",
     "ticker": "SOF.BR",
     "issuer_name": "SOFINA",
