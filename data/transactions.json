@@ -294,6 +294,27 @@
     "scraped_at": "2026-10-12T07:37:02.320373+00:00"
   },
   {
+    "id": "sofina-45",
+    "ticker": "SOF.BR",
+    "issuer_name": "SOFINA",
+    "person": "Union Financière Boel",
+    "declarer_type": "Member of administrative management or supervisory body",
+    "publication_date": "2026-10-07",
+    "transaction_date": "2026-10-05",
+    "type_raw": "Purchase / Acquisition",
+    "type": "BUY",
+    "included": true,
+    "specifications": null,
+    "instrument_type": "Share",
+    "isin": "BE0003717312",
+    "currency": "EUR",
+    "quantity": 201099.0,
+    "price": 250.51,
+    "amount": 50377310.49,
+    "detail_url": "https://www.fsma.be/en/manager-transaction/sofina-45",
+    "scraped_at": "2026-11-19T15:29:42.984501+00:00"
+  },
+  {
     "id": "sofina-42",
     "ticker": "SOF.BR",
     "issuer_name": "SOFINA",
